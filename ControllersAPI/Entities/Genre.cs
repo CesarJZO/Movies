@@ -20,6 +20,6 @@ public sealed record Genre : IValidatableObject
         ReadOnlySpan<char> span = Name;
 
         if (!char.IsUpper(span[0]))
-            yield return new ValidationResult("First letter must be uppercase.", new[] { nameof(Name) });
+            yield return new ValidationResult("First letter must be uppercase.", memberNames: [ nameof(Name) ]);
     }
 }
