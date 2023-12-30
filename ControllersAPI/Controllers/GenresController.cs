@@ -6,20 +6,23 @@ namespace ControllersAPI.Controllers;
 
 [ApiController] // This attribute automatically validates the model state and returns 400 if it's invalid
 [Route("api/[controller]")]
-public sealed class GenresController(IRepo<Genre> repo) : ControllerBase
+public sealed class GenresController(ILogger<Genre> logger, IRepo<Genre> repo) : ControllerBase
 {
     private readonly IRepo<Genre> _repo = repo;
+    private readonly ILogger<Genre> _logger = logger;
 
     [HttpGet]
     [HttpGet("all")]
     public ActionResult<IEnumerable<Genre>> Get()
     {
-        return _repo.GetAll.ToArray();
+        _logger.LogInformation("Getting all genres");
+        return (List<Genre>)_repo.GetAll;
     }
 
     [HttpGet("{id:int}")]
     public ActionResult<Genre> Get(int id, [FromHeader] string Name)
     {
+        _logger.LogInformation("Getting genre by id");
         // This is not needed because of the ApiController attribute
         // if (!ModelState.IsValid)
         // {
@@ -29,7 +32,10 @@ public sealed class GenresController(IRepo<Genre> repo) : ControllerBase
         Genre genre = _repo.Get(id);
 
         if (genre is null)
+        {
+            _logger.LogWarning("Genre not found");
             return NotFound();
+        }
 
         return genre;
     }
@@ -48,6 +54,12 @@ public sealed class GenresController(IRepo<Genre> repo) : ControllerBase
     [HttpGet("guid")]
     public ActionResult<Guid> GetGuid()
     {
+        _logger.LogInformation("Getting guid");
+        if (_repo is null)
+        {
+            _logger.LogWarning("Repo is null");
+            return NotFound();
+        }
         return _repo.Guid;
     }
 
