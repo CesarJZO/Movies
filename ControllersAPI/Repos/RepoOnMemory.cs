@@ -15,10 +15,11 @@ public class RepoOnMemory : IRepo<Genre>
     public RepoOnMemory()
     {
         _genres = Enumerable.Range(1, 3)
-            .Select(index => new Genre(
-                Id: index,
-                Name: GenreNames[Random.Shared.Next(GenreNames.Length)]
-            ))
+            .Select(index => new Genre
+            {
+                Id = index,
+                Name = GenreNames[Random.Shared.Next(GenreNames.Length)]
+            })
             .ToList();
     }
 
