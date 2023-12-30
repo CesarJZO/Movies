@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ControllersAPI.Controllers;
 
-[ApiController]
+[ApiController] // This attribute automatically validates the model state and returns 400 if it's invalid
 [Route("api/[controller]")]
 public sealed class GenresController(IRepo<Genre> repo) : ControllerBase
 {
@@ -18,12 +18,13 @@ public sealed class GenresController(IRepo<Genre> repo) : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    public ActionResult<Genre> Get(int id, [FromHeader] string name)
+    public ActionResult<Genre> Get(int id, [FromHeader] string Name)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+        // This is not needed because of the ApiController attribute
+        // if (!ModelState.IsValid)
+        // {
+        //     return BadRequest(ModelState);
+        // }
 
         Genre genre = _repo.Get(id);
 
