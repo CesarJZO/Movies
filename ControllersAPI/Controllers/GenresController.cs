@@ -11,9 +11,23 @@ public sealed class GenresController(IRepo<Genre> repo) : ControllerBase
     private readonly IRepo<Genre> _repo = repo;
 
     [HttpGet]
+    [HttpGet("all")]
     public IEnumerable<Genre> Get()
     {
         return _repo.GetAll;
+    }
+
+    [HttpGet("{id:int}")]
+    public Genre Get(int id)
+    {
+        Genre genre = _repo.Get(id);
+
+        if (genre is null)
+        {
+            // return NotFound();
+        }
+
+        return genre;
     }
 
     [HttpPost]
