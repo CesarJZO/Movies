@@ -26,4 +26,11 @@ public class RepoOnMemory : IRepo<Genre>
     {
         return _genres.FirstOrDefault(g => g.Id == id)!;
     }
+
+    public async Task<Genre> GetAsync(int id)
+    {
+        await Task.Delay(TimeSpan.FromSeconds(1));
+
+        return _genres.FirstOrDefault(g => g.Id == id)!;
+    }
 }

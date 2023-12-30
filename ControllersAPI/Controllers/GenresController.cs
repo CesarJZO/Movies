@@ -28,10 +28,22 @@ public sealed class GenresController(IRepo<Genre> repo) : ControllerBase
         return genre;
     }
 
+    [HttpGet("async/{id:int}")]
+    public async Task<ActionResult<Genre>> GetAsync(int id)
+    {
+        Genre genre = await _repo.GetAsync(id);
+
+        if (genre is null)
+            return NotFound();
+
+        return genre;
+    }
+
     [HttpPost]
     public Genre Post(Genre genre)
     {
-        return genre with { Id = _repo.GetAll.Count() + 1 };
+        var newGenre = genre with { Id = _repo.GetAll.Count() + 1 };
+        return newGenre;
     }
 
     [HttpPut]
