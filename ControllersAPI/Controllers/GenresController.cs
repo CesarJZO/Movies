@@ -1,6 +1,7 @@
 using ControllersAPI.Entities;
 using ControllersAPI.Repos;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace ControllersAPI.Controllers;
 
@@ -18,8 +19,13 @@ public sealed class GenresController(IRepo<Genre> repo) : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    public ActionResult<Genre> Get(int id)
+    public ActionResult<Genre> Get(int id, [BindRequired] string name)
     {
+        if (ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         Genre genre = _repo.Get(id);
 
         if (genre is null)
