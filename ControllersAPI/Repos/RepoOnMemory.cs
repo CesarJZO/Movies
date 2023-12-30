@@ -12,6 +12,9 @@ public class RepoOnMemory : IRepo<Genre>
     ];
 
     public IEnumerable<Genre> GetAll => _genres;
+
+    public Guid Guid { get; init; }
+
     public RepoOnMemory()
     {
         _genres = Enumerable.Range(1, 3)
@@ -21,6 +24,8 @@ public class RepoOnMemory : IRepo<Genre>
                 Name = GenreNames[Random.Shared.Next(GenreNames.Length)]
             })
             .ToList();
+
+        Guid = Guid.NewGuid();
     }
 
     public Genre Get(int id)
@@ -33,5 +38,12 @@ public class RepoOnMemory : IRepo<Genre>
         await Task.Delay(TimeSpan.FromSeconds(1));
 
         return _genres.FirstOrDefault(g => g.Id == id)!;
+    }
+
+    public Genre Post(Genre entity)
+    {
+        var newGenre = entity with { Id = _genres.Count + 1 };
+        _genres.Add(newGenre);
+        return newGenre;
     }
 }

@@ -12,9 +12,9 @@ public sealed class GenresController(IRepo<Genre> repo) : ControllerBase
 
     [HttpGet]
     [HttpGet("all")]
-    public IEnumerable<Genre> Get()
+    public ActionResult<IEnumerable<Genre>> Get()
     {
-        return _repo.GetAll;
+        return _repo.GetAll.ToArray();
     }
 
     [HttpGet("{id:int}")]
@@ -43,6 +43,12 @@ public sealed class GenresController(IRepo<Genre> repo) : ControllerBase
             return NotFound();
 
         return genre;
+    }
+
+    [HttpGet("guid")]
+    public ActionResult<Guid> GetGuid()
+    {
+        return _repo.Guid;
     }
 
     [HttpPost]
