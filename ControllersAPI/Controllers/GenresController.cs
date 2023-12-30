@@ -18,14 +18,12 @@ public sealed class GenresController(IRepo<Genre> repo) : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    public Genre Get(int id)
+    public ActionResult<Genre> Get(int id)
     {
         Genre genre = _repo.Get(id);
 
         if (genre is null)
-        {
-            // return NotFound();
-        }
+            return NotFound();
 
         return genre;
     }

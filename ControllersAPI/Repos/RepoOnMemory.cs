@@ -24,6 +24,6 @@ public class RepoOnMemory : IRepo<Genre>
 
     public Genre Get(int id)
     {
-        return _genres.FirstOrDefault(g => g.Id == id);
+        return _genres.FirstOrDefault(g => g.Id == id)!;
     }
 }

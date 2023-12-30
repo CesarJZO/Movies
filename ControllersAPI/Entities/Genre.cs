@@ -1,3 +1,3 @@
 namespace ControllersAPI.Entities;
 
-public record Genre(int Id, string Name);
+public sealed record Genre(int Id, string Name);
