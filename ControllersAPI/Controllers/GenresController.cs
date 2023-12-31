@@ -1,4 +1,5 @@
 using ControllersAPI.Entities;
+using ControllersAPI.Filters;
 using ControllersAPI.Repos;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -8,6 +9,7 @@ namespace ControllersAPI.Controllers;
 
 [ApiController] // This attribute automatically validates the model state and returns 400 if it's invalid
 [Route("api/[controller]")]
+// [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public sealed class GenresController(ILogger<Genre> logger, IRepo<Genre> repo) : ControllerBase
 {
     private readonly IRepo<Genre> _repo = repo;
@@ -16,7 +18,7 @@ public sealed class GenresController(ILogger<Genre> logger, IRepo<Genre> repo) :
     [HttpGet]
     [HttpGet("all")]
     // [ResponseCache(Duration = 60)]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [ServiceFilter(typeof(ActionFilter))]
     public ActionResult<IEnumerable<Genre>> Get()
     {
         _logger.LogInformation("Getting all genres: {GA}", _repo.GetAll);
@@ -37,7 +39,8 @@ public sealed class GenresController(ILogger<Genre> logger, IRepo<Genre> repo) :
 
         if (genre is null)
         {
-            _logger.LogWarning("Genre not found");
+            // throw new ApplicationException($"Genre {id} not found");
+            _logger.LogWarning("Genre {id} not found", id);
             return NotFound();
         }
 
