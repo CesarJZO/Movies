@@ -13,6 +13,10 @@ builder.Services.AddSwaggerGen();
 
 WebApplication app = builder.Build();
 
+// If the app is run with the following command:
+// app.Run(async context => await context.Response.WriteAsync("Hello World!"));
+// The rest of the middleware is not executed.
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -20,9 +24,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// All middlewares starting with Use are executed in the order they are declared.
+// And they do not interrupt the execution of the next middlewares.
 app.UseHttpsRedirection();
 
-// app.UseAuthorization();
+app.UseAuthorization();
 
 app.MapControllers();
 
