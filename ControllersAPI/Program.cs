@@ -5,7 +5,8 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddSingleton<IRepo<Genre>, RepoOnMemory>();
+builder.Services.AddResponseCaching();
+builder.Services.AddScoped<IRepo<Genre>, RepoOnMemory>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -47,8 +48,13 @@ if (app.Environment.IsDevelopment())
 // And they do not interrupt the execution of the next middlewares.
 app.UseHttpsRedirection();
 
+app.UseRouting();
+
+app.UseResponseCaching();
+
 app.UseAuthorization();
 
+// app.UseEndpoints(endpoints => endpoints.MapControllers());
 app.MapControllers();
 
 app.Run();

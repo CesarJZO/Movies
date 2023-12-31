@@ -13,9 +13,10 @@ public sealed class GenresController(ILogger<Genre> logger, IRepo<Genre> repo) :
 
     [HttpGet]
     [HttpGet("all")]
+    [ResponseCache(Duration = 60)]
     public ActionResult<IEnumerable<Genre>> Get()
     {
-        _logger.LogInformation("Getting all genres");
+        _logger.LogInformation("Getting all genres: {GA}", _repo.GetAll);
         return (List<Genre>)_repo.GetAll;
     }
 
