@@ -1,10 +1,12 @@
 using ControllersAPI.Entities;
 using ControllersAPI.Repos;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
 builder.Services.AddResponseCaching();
 builder.Services.AddScoped<IRepo<Genre>, RepoOnMemory>();
 builder.Services.AddControllers();
@@ -29,7 +31,7 @@ app.Use(async (context, next) => {
     await swapStream.CopyToAsync(originalResponseBody);
     context.Response.Body = originalResponseBody;
 
-    app.Logger.LogInformation("Response: {RB}", responseBody);
+    // app.Logger.LogInformation("Response: {RB}", responseBody);
 });
 
 // If the app is run with the following command:
@@ -52,6 +54,7 @@ app.UseRouting();
 
 app.UseResponseCaching();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 // app.UseEndpoints(endpoints => endpoints.MapControllers());

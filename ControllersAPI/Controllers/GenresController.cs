@@ -1,5 +1,7 @@
 using ControllersAPI.Entities;
 using ControllersAPI.Repos;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ControllersAPI.Controllers;
@@ -13,7 +15,8 @@ public sealed class GenresController(ILogger<Genre> logger, IRepo<Genre> repo) :
 
     [HttpGet]
     [HttpGet("all")]
-    [ResponseCache(Duration = 60)]
+    // [ResponseCache(Duration = 60)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public ActionResult<IEnumerable<Genre>> Get()
     {
         _logger.LogInformation("Getting all genres: {GA}", _repo.GetAll);
