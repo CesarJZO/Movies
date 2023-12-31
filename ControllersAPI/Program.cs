@@ -13,9 +13,28 @@ builder.Services.AddSwaggerGen();
 
 WebApplication app = builder.Build();
 
+app.Use(async (context, next) => {
+    using var swapStream = new MemoryStream();
+
+    var originalResponseBody = context.Response.Body;
+    context.Response.Body = swapStream;
+    
+    await next.Invoke();
+
+    swapStream.Seek(0, SeekOrigin.Begin);
+    string responseBody = new StreamReader(swapStream).ReadToEnd();
+    swapStream.Seek(0, SeekOrigin.Begin);
+
+    await swapStream.CopyToAsync(originalResponseBody);
+    context.Response.Body = originalResponseBody;
+
+    app.Logger.LogInformation("Response: {RB}", responseBody);
+});
+
 // If the app is run with the following command:
 // app.Run(async context => await context.Response.WriteAsync("Hello World!"));
 // The rest of the middleware is not executed.
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
