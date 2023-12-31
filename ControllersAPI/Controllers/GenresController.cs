@@ -1,8 +1,4 @@
 using ControllersAPI.Entities;
-using ControllersAPI.Filters;
-using ControllersAPI.Repos;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ControllersAPI.Controllers;
@@ -10,83 +6,49 @@ namespace ControllersAPI.Controllers;
 [ApiController] // This attribute automatically validates the model state and returns 400 if it's invalid
 [Route("api/[controller]")]
 // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-public sealed class GenresController(ILogger<Genre> logger, IRepo<Genre> repo) : ControllerBase
+public sealed class GenresController(ILogger<Genre> logger) : ControllerBase
 {
-    private readonly IRepo<Genre> _repo = repo;
     private readonly ILogger<Genre> _logger = logger;
 
     [HttpGet]
-    [HttpGet("all")]
-    // [ResponseCache(Duration = 60)]
-    [ServiceFilter(typeof(ActionFilter))]
     public ActionResult<IEnumerable<Genre>> Get()
     {
-        _logger.LogInformation("Getting all genres: {GA}", _repo.GetAll);
-        return (List<Genre>)_repo.GetAll;
+        return (List<Genre>)
+        [
+            new Genre { Id = 1, Name = "Comedy" },
+            new Genre { Id = 2, Name = "Action" }
+        ];
     }
 
     [HttpGet("{id:int}")]
-    public ActionResult<Genre> Get(int id, [FromHeader] string Name)
+    public ActionResult<Genre> Get(int id)
     {
-        _logger.LogInformation("Getting genre by id");
-        // This is not needed because of the ApiController attribute
-        // if (!ModelState.IsValid)
-        // {
-        //     return BadRequest(ModelState);
-        // }
-
-        Genre genre = _repo.Get(id);
-
-        if (genre is null)
-        {
-            // throw new ApplicationException($"Genre {id} not found");
-            _logger.LogWarning("Genre {id} not found", id);
-            return NotFound();
-        }
-
-        return genre;
+        throw new NotImplementedException();
     }
 
     [HttpGet("async/{id:int}")]
     public async Task<ActionResult<Genre>> GetAsync(int id)
     {
-        Genre genre = await _repo.GetAsync(id);
-
-        if (genre is null)
-            return NotFound();
-
-        return genre;
-    }
-
-    [HttpGet("guid")]
-    public ActionResult<Guid> GetGuid()
-    {
-        _logger.LogInformation("Getting guid");
-        if (_repo is null)
-        {
-            _logger.LogWarning("Repo is null");
-            return NotFound();
-        }
-        return _repo.Guid;
+        await Task.Delay(1000);
+        throw new NotImplementedException();
     }
 
     [HttpPost]
     public Genre Post([FromBody] Genre genre)
     {
-        var newGenre = genre with { Id = _repo.GetAll.Count() + 1 };
-        return newGenre;
+        throw new NotImplementedException();
     }
 
     [HttpPut]
     public Genre Put(Genre genre)
     {
-        return genre;
+        throw new NotImplementedException();
     }
 
     [HttpDelete]
     public Genre Delete(Genre genre)
     {
-        return genre;
+        throw new NotImplementedException();
     }
 }
 

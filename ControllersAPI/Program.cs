@@ -1,16 +1,10 @@
-using ControllersAPI.Entities;
 using ControllersAPI.Filters;
-using ControllersAPI.Repos;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
-builder.Services.AddResponseCaching();
-builder.Services.AddScoped<IRepo<Genre>, RepoOnMemory>();
-builder.Services.AddTransient<ActionFilter>();
 builder.Services.AddControllers(options => {
     options.Filters.Add<ExceptionFilter>();
 });
@@ -20,29 +14,6 @@ builder.Services.AddSwaggerGen();
 
 WebApplication app = builder.Build();
 
-app.Use(async (context, next) => {
-    using var swapStream = new MemoryStream();
-
-    var originalResponseBody = context.Response.Body;
-    context.Response.Body = swapStream;
-    
-    await next.Invoke();
-
-    swapStream.Seek(0, SeekOrigin.Begin);
-    string responseBody = new StreamReader(swapStream).ReadToEnd();
-    swapStream.Seek(0, SeekOrigin.Begin);
-
-    await swapStream.CopyToAsync(originalResponseBody);
-    context.Response.Body = originalResponseBody;
-
-    // app.Logger.LogInformation("Response: {RB}", responseBody);
-});
-
-// If the app is run with the following command:
-// app.Run(async context => await context.Response.WriteAsync("Hello World!"));
-// The rest of the middleware is not executed.
-
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -50,18 +21,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// All middlewares starting with Use are executed in the order they are declared.
-// And they do not interrupt the execution of the next middlewares.
 app.UseHttpsRedirection();
 
 app.UseRouting();
 
-app.UseResponseCaching();
-
 app.UseAuthentication();
+
 app.UseAuthorization();
 
-// app.UseEndpoints(endpoints => endpoints.MapControllers());
 app.MapControllers();
 
 app.Run();
