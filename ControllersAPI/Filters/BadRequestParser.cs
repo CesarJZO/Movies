@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace ControllersAPI.Filters;
 
@@ -7,7 +8,9 @@ public sealed class BadRequestParser : IActionFilter
 {
     public void OnActionExecuted(ActionExecutedContext context)
     {
-        var statusCode = context.HttpContext.Response.StatusCode;
+        if (context.Result is not IStatusCodeActionResult castResult) return;
+
+        var statusCode = castResult.StatusCode;
 
         if (statusCode is not 400) return;
 
@@ -34,6 +37,6 @@ public sealed class BadRequestParser : IActionFilter
 
     public void OnActionExecuting(ActionExecutingContext context)
     {
-        throw new NotImplementedException();
+        
     }
 }

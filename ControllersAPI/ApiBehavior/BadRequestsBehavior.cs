@@ -8,9 +8,9 @@ public static class BadRequestsBehavior
     {
         options.InvalidModelStateResponseFactory = actionContext =>
         {
-            var response = actionContext.ModelState.Values
-                .SelectMany(state => state.Errors)
-                .Select(error => error.ErrorMessage)
+            var response = actionContext.ModelState
+                .SelectMany(pair => pair.Value!.Errors
+                    .Select(error => $"{pair.Key}: {error.ErrorMessage}"))
                 .ToArray();
 
             return new BadRequestObjectResult(response);
