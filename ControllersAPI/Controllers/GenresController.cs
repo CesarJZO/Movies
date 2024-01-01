@@ -30,7 +30,7 @@ public sealed class GenresController(
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<Genre>> Get(int id)
+    public async Task<ActionResult<GenreDTO>> Get(int id)
     {
         var genre = await _dbContext.Genres.FindAsync(id);
 
@@ -41,12 +41,14 @@ public sealed class GenresController(
         }
 
         _logger.LogInformation("Getting genre with id {id}.", id);
-        return genre;
+        
+        return _mapper.Map<GenreDTO>(genre);
     }
 
     [HttpPost]
-    public async Task<ActionResult<Genre>> Post([FromBody] Genre genre)
+    public async Task<ActionResult<Genre>> Post([FromBody] GenreCreationDTO genreCreationDTO)
     {
+        var genre = _mapper.Map<Genre>(genreCreationDTO);
         _dbContext.Add(genre);
         await _dbContext.SaveChangesAsync();
         return NoContent();

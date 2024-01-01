@@ -9,5 +9,6 @@ public sealed class AutoMapperProfiles : Profile
     public AutoMapperProfiles()
     {
         CreateMap<Genre, GenreDTO>().ReverseMap();
+        CreateMap<GenreCreationDTO, Genre>();
     }
 }
