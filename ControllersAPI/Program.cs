@@ -1,15 +1,20 @@
+using ControllersAPI;
 using ControllersAPI.Filters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
-builder.Services.AddControllers(options =>
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection")
+    )
+);
+
+builder.Services.AddCors(options =>
 {
-    options.Filters.Add<ExceptionFilter>();
-});
-builder.Services.AddCors(options => {
     // string[]? frontendUrls = builder.Configuration.GetSection("Frontend").GetValue<string[]>("Urls");
     // var frontendUrl = builder.Configuration.GetValue<string>("Frontend:Url");
     var urls = builder.Configuration.GetSection("Frontend:Urls").Get<string[]>();
@@ -20,6 +25,14 @@ builder.Services.AddCors(options => {
             .AllowAnyHeader()
     );
 });
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
+
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<ExceptionFilter>();
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
