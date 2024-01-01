@@ -1,4 +1,5 @@
 using ControllersAPI;
+using ControllersAPI.ApiBehavior;
 using ControllersAPI.Filters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -31,7 +32,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<ExceptionFilter>();
-});
+    options.Filters.Add<BadRequestParser>();
+}).ConfigureApiBehaviorOptions(BadRequestsBehavior.Parse);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

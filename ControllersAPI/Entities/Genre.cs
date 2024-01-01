@@ -10,7 +10,7 @@ public sealed record Genre
 {
     public int Id { get; init; }
 
-    [Required(ErrorMessage = "The '{0}' field is required.")]
+    [Required(ErrorMessage = "The '{0}' field is required!")]
     [StringLength(20)]
     [FirstLetterUppercase]
     public string Name { get; set; } = string.Empty;

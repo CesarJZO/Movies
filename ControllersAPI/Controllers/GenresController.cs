@@ -1,54 +1,61 @@
 using ControllersAPI.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ControllersAPI.Controllers;
 
 [ApiController] // This attribute automatically validates the model state and returns 400 if it's invalid
 [Route("api/[controller]")]
 // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-public sealed class GenresController(ILogger<Genre> logger) : ControllerBase
+public sealed class GenresController(ILogger<Genre> logger, ApplicationDbContext dbContext) : ControllerBase
 {
     private readonly ILogger<Genre> _logger = logger;
+    private readonly ApplicationDbContext _dbContext = dbContext;
 
     [HttpGet]
-    public ActionResult<IEnumerable<Genre>> Get()
+    public async Task<ActionResult<IEnumerable<Genre>>> Get()
     {
-        return (List<Genre>)
-        [
-            new Genre { Id = 1, Name = "Comedy" },
-            new Genre { Id = 2, Name = "Action" }
-        ];
+        _logger.LogInformation("Getting all genres.");
+        return await _dbContext.Genres.ToListAsync();
     }
 
     [HttpGet("{id:int}")]
-    public ActionResult<Genre> Get(int id)
+    public async Task<ActionResult<Genre>> Get(int id)
     {
-        throw new NotImplementedException();
-    }
+        var genre = await _dbContext.Genres.FindAsync(id);
 
-    [HttpGet("async/{id:int}")]
-    public async Task<ActionResult<Genre>> GetAsync(int id)
-    {
-        await Task.Delay(1000);
-        throw new NotImplementedException();
+        if (genre is null)
+        {
+            _logger.LogWarning("Genre with id {id} not found.", id);
+            return NotFound();
+        }
+
+        _logger.LogInformation("Getting genre with id {id}.", id);
+        return genre;
     }
 
     [HttpPost]
-    public Genre Post([FromBody] Genre genre)
+    public async Task<ActionResult<Genre>> Post([FromBody] Genre genre)
     {
-        throw new NotImplementedException();
+        _dbContext.Add(genre);
+        await _dbContext.SaveChangesAsync();
+        return NoContent();
     }
 
     [HttpPut]
-    public Genre Put(Genre genre)
+    public async Task<ActionResult<Genre>> Put(Genre genre)
     {
-        throw new NotImplementedException();
+        _dbContext.Update(genre);
+        await _dbContext.SaveChangesAsync();
+        return NoContent();
     }
 
     [HttpDelete]
-    public Genre Delete(Genre genre)
+    public async Task<ActionResult<Genre>> Delete(Genre genre)
     {
-        throw new NotImplementedException();
+        _dbContext.Remove(genre);
+        await _dbContext.SaveChangesAsync();
+        return NoContent();
     }
 }
 
