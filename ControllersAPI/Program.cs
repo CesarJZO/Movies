@@ -1,3 +1,4 @@
+using System.Reflection;
 using ControllersAPI;
 using ControllersAPI.ApiBehavior;
 using ControllersAPI.Filters;
@@ -7,7 +8,9 @@ using Microsoft.EntityFrameworkCore;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+// builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+// builder.Services.AddAutoMapper(typeof(Program).Assembly);
+builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection")

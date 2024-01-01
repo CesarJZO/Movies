@@ -1,3 +1,5 @@
+using AutoMapper;
+using ControllersAPI.DTOs;
 using ControllersAPI.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,16 +9,24 @@ namespace ControllersAPI.Controllers;
 [ApiController] // This attribute automatically validates the model state and returns 400 if it's invalid
 [Route("api/[controller]")]
 // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-public sealed class GenresController(ILogger<Genre> logger, ApplicationDbContext dbContext) : ControllerBase
+public sealed class GenresController(
+    ILogger<Genre> logger,
+    ApplicationDbContext dbContext,
+    IMapper mapper
+) : ControllerBase
 {
     private readonly ILogger<Genre> _logger = logger;
     private readonly ApplicationDbContext _dbContext = dbContext;
+    private readonly IMapper _mapper = mapper;
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Genre>>> Get()
+    public async Task<ActionResult<GenreDTO[]>> Get()
     {
         _logger.LogInformation("Getting all genres.");
-        return await _dbContext.Genres.ToListAsync();
+
+        var genres = await _dbContext.Genres.ToArrayAsync();
+
+        return _mapper.Map<GenreDTO[]>(genres);
     }
 
     [HttpGet("{id:int}")]
