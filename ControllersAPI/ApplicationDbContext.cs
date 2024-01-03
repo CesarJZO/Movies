@@ -8,4 +8,5 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
     private readonly DbContextOptions _options = options;
 
     public DbSet<Genre> Genres { get; set; }
+    public DbSet<Actor> Actors { get; set; }
 }

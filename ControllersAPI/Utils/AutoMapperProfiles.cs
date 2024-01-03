@@ -10,5 +10,8 @@ public sealed class AutoMapperProfiles : Profile
     {
         CreateMap<Genre, GenreDTO>().ReverseMap();
         CreateMap<GenreCreationDTO, Genre>();
+        CreateMap<Actor, ActorDTO>().ReverseMap();
+        CreateMap<ActorCreationDTO, Actor>()
+            .ForMember(actor => actor.Photo, options => options.Ignore());
     }
 }
