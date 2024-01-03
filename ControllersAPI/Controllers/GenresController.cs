@@ -64,10 +64,24 @@ public sealed class GenresController(
         return NoContent();
     }
 
-    [HttpPut]
-    public async Task<ActionResult<Genre>> Put(Genre genre)
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<Genre>> Put(int id, GenreCreationDTO genreCreationDTO)
     {
-        _dbContext.Update(genre);
+        var genre = await _dbContext.Genres.FindAsync(id);
+
+        if (genre is null)
+        {
+            _logger.LogWarning("Genre with id {id} not found.", id);
+            return NotFound();
+        }
+
+        var originalName = genre.Name;
+
+        var genreUpdated = _mapper.Map(genreCreationDTO, genre);
+        _dbContext.Update(genreUpdated); // This may not be necessary
+
+        _logger.LogInformation("Updating genre with id {id} from '{og}' to '{new}'.", id, originalName, genreUpdated.Name);
+
         await _dbContext.SaveChangesAsync();
         return NoContent();
     }
