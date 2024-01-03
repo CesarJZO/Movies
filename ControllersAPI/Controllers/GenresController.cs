@@ -22,9 +22,9 @@ public sealed class GenresController(
     [HttpGet]
     public async Task<ActionResult<GenreDTO[]>> Get()
     {
-        _logger.LogInformation("Getting all genres.");
-
         var genres = await _dbContext.Genres.ToArrayAsync();
+
+        _logger.LogInformation("Getting all genres: [{G}].", string.Join(", ", genres.Select(g => g.Name)));
 
         return _mapper.Map<GenreDTO[]>(genres);
     }
