@@ -27,6 +27,7 @@ builder.Services.AddCors(options =>
         builder.WithOrigins(urls!)
             .AllowAnyMethod()
             .AllowAnyHeader()
+            .WithExposedHeaders(["totalAmountOfRecords"])
     );
 });
 
