@@ -56,7 +56,7 @@ public sealed class GenresController(
     }
 
     [HttpPost]
-    public async Task<ActionResult<Genre>> Post([FromBody] GenreCreationDTO genreCreationDTO)
+    public async Task<ActionResult> Post([FromBody] GenreCreationDTO genreCreationDTO)
     {
         var genre = _mapper.Map<Genre>(genreCreationDTO);
         _dbContext.Add(genre);
@@ -65,7 +65,7 @@ public sealed class GenresController(
     }
 
     [HttpPut("{id:int}")]
-    public async Task<ActionResult<Genre>> Put(int id, GenreCreationDTO genreCreationDTO)
+    public async Task<ActionResult> Put(int id, GenreCreationDTO genreCreationDTO)
     {
         var genre = await _dbContext.Genres.FindAsync(id);
 
@@ -77,19 +77,31 @@ public sealed class GenresController(
 
         var originalName = genre.Name;
 
+        // genreUpdated is the same instance as genre
         var genreUpdated = _mapper.Map(genreCreationDTO, genre);
-        _dbContext.Update(genreUpdated); // This may not be necessary
+        // _dbContext.Update(genreUpdated); // This may not be necessary
 
-        _logger.LogInformation("Updating genre with id {id} from '{og}' to '{new}'.", id, originalName, genreUpdated.Name);
+        _logger.LogInformation("Updating genre with id {id} from '{og}' to '{new}'.", id, originalName, genre.Name);
 
         await _dbContext.SaveChangesAsync();
         return NoContent();
     }
 
-    [HttpDelete]
-    public async Task<ActionResult<Genre>> Delete(Genre genre)
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> Delete(int id)
     {
-        _dbContext.Remove(genre);
+        bool exists = await _dbContext.Genres.AnyAsync(g => g.Id == id);
+
+        if (!exists)
+        {
+            _logger.LogWarning("Genre with id {id} not found.", id);
+            return NotFound();
+        }
+
+        _dbContext.Remove(new Genre { Id = id });
+
+        _logger.LogInformation("Deleting genre with id {id}.", id);
+
         await _dbContext.SaveChangesAsync();
         return NoContent();
     }
