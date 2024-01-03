@@ -21,10 +21,11 @@ builder.Services.AddCors(options =>
 {
     // string[]? frontendUrls = builder.Configuration.GetSection("Frontend").GetValue<string[]>("Urls");
     // var frontendUrl = builder.Configuration.GetValue<string>("Frontend:Url");
-    var urls = builder.Configuration.GetSection("Frontend:Urls").Get<string[]>();
+    var urls = builder.Configuration.GetSection("Frontend:Urls").Get<string[]>()
+        ?? throw new InvalidOperationException("Frontend URLs not found.");
 
     options.AddDefaultPolicy(builder =>
-        builder.WithOrigins(urls!)
+        builder.WithOrigins(urls)
             .AllowAnyMethod()
             .AllowAnyHeader()
             .WithExposedHeaders(["totalAmountOfRecords"])

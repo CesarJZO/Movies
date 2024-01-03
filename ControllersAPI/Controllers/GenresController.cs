@@ -36,7 +36,7 @@ public sealed class GenresController(
             string.Join(", ", queryableGenres.Select(g => g.Name))
         );
 
-        return _mapper.Map<GenreDTO[]>(queryableGenres);
+        return _mapper.Map<GenreDTO[]>(genres);
     }
 
     [HttpGet("{id:int}")]
