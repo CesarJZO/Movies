@@ -1,6 +1,7 @@
 using AutoMapper;
 using ControllersAPI.DTOs;
 using ControllersAPI.Entities;
+using ControllersAPI.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,13 +21,22 @@ public sealed class GenresController(
     private readonly IMapper _mapper = mapper;
 
     [HttpGet]
-    public async Task<ActionResult<GenreDTO[]>> Get()
+    public async Task<ActionResult<GenreDTO[]>> Get([FromQuery] PaginationDTO paginationDTO)
     {
-        var genres = await _dbContext.Genres.ToArrayAsync();
+        var queryableGenres = _dbContext.Genres.AsQueryable();
+        await HttpContext.InsertPaginationParamsInHeader(queryableGenres);
 
-        _logger.LogInformation("Getting all genres: [{G}].", string.Join(", ", genres.Select(g => g.Name)));
+        var genres = await queryableGenres
+            .OrderBy(g => g.Name)
+            .Paginate(paginationDTO)
+            .ToArrayAsync();
 
-        return _mapper.Map<GenreDTO[]>(genres);
+        _logger.LogInformation(
+            "Getting all genres: [{G}].",
+            string.Join(", ", queryableGenres.Select(g => g.Name))
+        );
+
+        return _mapper.Map<GenreDTO[]>(queryableGenres);
     }
 
     [HttpGet("{id:int}")]
@@ -41,7 +51,7 @@ public sealed class GenresController(
         }
 
         _logger.LogInformation("Getting genre with id {id}.", id);
-        
+
         return _mapper.Map<GenreDTO>(genre);
     }
 
