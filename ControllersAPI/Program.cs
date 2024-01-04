@@ -1,4 +1,3 @@
-using System.Reflection;
 using ControllersAPI;
 using ControllersAPI.ApiBehavior;
 using ControllersAPI.Filters;
@@ -14,6 +13,8 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddTransient<IFileStorage, CloudFileStorage>();
+// builder.Services.AddTransient<IFileStorage, LocalFileStorage>();
+// builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(
@@ -60,6 +61,8 @@ if (app.Environment.IsDevelopment())
 app.UseCors();
 
 app.UseHttpsRedirection();
+
+app.UseStaticFiles();
 
 app.UseRouting();
 
