@@ -2,13 +2,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ControllersAPI.DTOs;
 
-public readonly struct ActorCreationDTO
+public class ActorCreationDTO
 {
     [Required]
     [StringLength(120)]
-    public string Name { get; init; }
+    public string Name { get; set; }
 
-    public string? Biography { get; init; }
+    public string? Biography { get; set; }
     
-    public DateTime DateOfBirth { get; init; }
+    public DateTime DateOfBirth { get; set; }
+
+    public IFormFile? Picture { get; set; }
 }
