@@ -2,6 +2,7 @@ using System.Reflection;
 using ControllersAPI;
 using ControllersAPI.ApiBehavior;
 using ControllersAPI.Filters;
+using ControllersAPI.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,9 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 // builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 // builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddAutoMapper(typeof(Program));
+
+builder.Services.AddTransient<IFileStorage, CloudFileStorage>();
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection")
