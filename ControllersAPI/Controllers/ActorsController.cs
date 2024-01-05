@@ -37,6 +37,21 @@ public sealed class ActorsController(
         return _mapper.Map<ActorDTO[]>(actors);
     }
 
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<ActorDTO>> Get(int id)
+    {
+        Actor? actor = await _dbContext.Actors.FindAsync(id);
+
+        if (actor is null)
+        {
+            _logger.LogWarning("Actor with id {id} not found.", id);
+            return NotFound();
+        }
+
+        _logger.LogInformation("Getting actor {name} with id {id}.", actor.Name, id);
+        return _mapper.Map<ActorDTO>(actor);
+    }
+
     [HttpPost]
     public async Task<ActionResult> Post([FromForm] ActorCreationDTO actorCreationDTO)
     {
@@ -48,6 +63,31 @@ public sealed class ActorsController(
         _logger.LogInformation("Creating actor {name}.", actor.Name);
 
         _dbContext.Add(actor);
+        await _dbContext.SaveChangesAsync();
+        return NoContent();
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult> Put(int id, [FromForm] ActorCreationDTO actorCreationDTO)
+    {
+        Actor? actor = await _dbContext.Actors.FindAsync(id);
+
+        if (actor is null)
+        {
+            _logger.LogWarning("Actor with id {id} not found.", id);
+            return NotFound();
+        }
+
+        actor = _mapper.Map(actorCreationDTO, actor);
+
+        if (actorCreationDTO is { Picture: not null })
+        {
+            if (actor.Photo is not null)
+                actor.Photo = await _fileStorage.EditFile(ContainerName, actorCreationDTO.Picture, actor.Photo);
+            else
+                actor.Photo = await _fileStorage.SaveFile(ContainerName, actorCreationDTO.Picture);
+        }
+
         await _dbContext.SaveChangesAsync();
         return NoContent();
     }
